@@ -1,49 +1,28 @@
 package effectiveJava;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
+import org.junit.Assert;
+import org.junit.Test;
 
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 public class GuavaCacheLRUTest {
-    private static final int MAX_CACHE_SIZE = 100000;
-    private static final int CACHE_EXPIRATION_SECONDS = 5;
-
-    public static void main(String[] args) throws ExecutionException {
-        LoadingCache<String, String> cache = CacheBuilder.newBuilder()
-                .maximumSize(MAX_CACHE_SIZE)
-                .expireAfterAccess(CACHE_EXPIRATION_SECONDS, TimeUnit.SECONDS)
-                .build(new CacheLoader<String, String>() {
-                    @Override
-                    public String load(String key){
-                        return "Value for " + key;
-                    }
-                });
-
-        // Access the cache
-        cache.put("Key1", "Value1");
-        cache.put("Key2", "Value2");
-
-        // Print the values
-        System.out.println(cache.get("Key1"));
-        System.out.println(cache.get("Key2"));
-
-        timeExpiration(5000);
-
-        // Print the values after time expirations is over
-        System.out.println(cache.get("Key1"));
-        System.out.println(cache.get("Key2"));
+    @Test
+    public void testEvictByExpiration() throws InterruptedException {
+        LRUGuavaCacheTest<String, String> cache = new LRUGuavaCacheTest<>(10, 2, TimeUnit.SECONDS);
+        cache.put("key", "value");
+        Thread.sleep(2000);
+        assertNull(cache.get("key"));
     }
 
-    public static void timeExpiration(int millisenconds){
-        //wait until the cache is cleaned for the expiration time
-        try {
-            Thread.sleep(millisenconds);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    @Test
+    public void testEvictBySize() throws InterruptedException {
+        LRUGuavaCacheTest<String, String> cache = new LRUGuavaCacheTest<>(2, 5, TimeUnit.SECONDS);
+        cache.put("key1", "value");
+        cache.put("key2", "value");
+        cache.put("key3", "value");
+        assertEquals(2, (long) cache.getSize());
     }
-
 }
