@@ -1,9 +1,6 @@
 package effectiveJava;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
+import com.google.common.cache.*;
 
 import java.util.concurrent.TimeUnit;
 
@@ -20,6 +17,7 @@ public class LRUGuavaCacheTest<K, V> {
                     String reason = notification.getCause().name();
                     System.out.println("Removed key: " + key + ", value: " + value + ", reason: " + reason);
                 })
+                .recordStats()
                 .build(
                     new CacheLoader<String, String>() {
                         @Override
@@ -39,5 +37,9 @@ public class LRUGuavaCacheTest<K, V> {
 
     public Long getSize(){
         return cache.size();
+    }
+
+    public CacheStats getCacheStats(){
+        return cache.stats();
     }
 }
