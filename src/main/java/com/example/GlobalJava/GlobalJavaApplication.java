@@ -12,10 +12,10 @@ public class GlobalJavaApplication {
 
 	public static Connection conectarBD(){
 		Connection conexion;
-		String host = "jdbc:mysql://localhost:3306/prueba_bd";
+		String host = "jdbc:mysql://localhost:3306/inventarios";
 		String user = "root";
 		String password = "";
-		String bd = "prueba_bd";
+		String bd = "inventarios";
 
 		System.out.println("Conectandoo....");
 
